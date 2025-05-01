@@ -2,7 +2,13 @@ const express = require('express');
 const users = require('./MOCK_DATA.json');
 const app = express();
 const PORT = 8000;
+//using middleware
+app.use(express.urlencoded({extended:false}));
 
+app.use((req,res,next)=>{
+    console.log("hello from middleware")
+    next();
+});
 // routes
 app.get('/users', (req,res)=>{
     const html = `
@@ -35,6 +41,7 @@ app.route('/api/users/:id').get((req,res)=>{
 });*/
 
 app.post('/api/users', (req,res)=>{
+    console.log(req.body);
     //TODO: create user
     res.json({status: "pending"});
 });
