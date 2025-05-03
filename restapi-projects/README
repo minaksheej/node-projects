@@ -1,0 +1,9 @@
+mongod --version
+mongod- to start the server
+
+
+how mongo db works
+Schema- define the structure 
+create model from schema 
+Schema->model
+using Model we will do CRUD operation 

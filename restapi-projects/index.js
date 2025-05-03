@@ -1,55 +1,41 @@
+//const users = require('./MOCK_DATA.json');
 const express = require('express');
-const users = require('./MOCK_DATA.json');
-const fs = require('fs');
+const {connectMongoDB} = require('./connection');
+
+
+const userRouter = require('./routes/user');
+
+const {logReqRes} = require('./middlewares');
 
 const app = express();
 const PORT = 8000;
+
+
+//connection to mongoDB
+connectMongoDB('mongodb://127.0.0.1:27017/youtube-app-1').then(()=>{
+    console.log("MongoDB Connected!")
+});
+
 //using middleware
 app.use(express.urlencoded({extended:false}));
+app.use(logReqRes("log.txt"));
 
-app.use((req,res,next)=>{
-    fs.appendFile("log.txt",`\n${Date.now()}: ${req.ip}: ${req.method}: ${req.path}`,(err,data)=>{
-        next();
-    });
-});
-// routes
-app.get('/users', (req,res)=>{
+//Router
+app.use('/api/user',userRouter);
+
+app.listen(PORT, ()=> console.log(`server started at port ${PORT}`));
+/* routes
+app.get('/users', async (req,res)=>{
+    const allDbUsers = await User.find({});
     const html = `
       <ul>
-      ${users.map((user)=> `<li>${user.first_name}</li>`).join("")}
+      ${allDbUsers.map((user)=> `<li>${user.first_name} - ${user.email} </li>`).join("")}
       </ul>
     `;
     return res.send(html);
 });
+*/
 
-app.get('/api/users', (req,res)=>{
-    return res.json(users);
-});
-
-
-app.route('/api/users/:id').get((req,res)=>{
-    const id= Number(req.params.id);
-    const user = users.find((user)=>user.id===id);
-    return res.json(user);
-}).put((req,res)=>{
-   return  res.json({status: "update pending"});
-}).delete((req,res)=>{
-    return  res.json({status: "delete pending"});
- });
-
-/*app.get('/api/users/:id', (req,res)=>{
-    const id= Number(req.params.id);
-    const user = users.find((user)=>user.id===id);
-    return res.json(user);
-});*/
-
-app.post('/api/users', (req,res)=>{
-    const body= req.body;
-    users.push({...body,id : users.length + 1});
-    fs.writeFile("./MOCK_DATA.json",JSON.stringify(users),(err,data)=>{
-        return res.status(201).json({status:"success",id: users.length+1});
-    });
-});
 
 /*app.patch('/api/users/:id', (req,res)=>{
     //TODO: create user
@@ -61,5 +47,3 @@ app.delete('api/users/:id', (req,res)=>{
 });
 */
 
-
-app.listen(PORT, ()=> console.log(`server started at port ${PORT}`));
