@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-async function connectMongoDB(params) {
+async function connectMongoDB(url) {
     //connection to mongoDb
-    return mongoose.connect('mongodb://127.0.0.1:27017/youtube-app-1');    
+    return mongoose.connect(url);    
 };
 
 module.exports = {

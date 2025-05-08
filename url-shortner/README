@@ -1,0 +1,7 @@
+mongo query:
+
+show dbs
+
+use short-url
+show collections
+db.urls.find({})
